@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend E-commerce – Next.js 16
 
-## Getting Started
+Aplicación en Next.js (App Router + TypeScript + Tailwind) que consume la API REST de e-commerce hecha en Laravel 12 + Stripe + Swagger.
 
-First, run the development server:
+API: https://github.com/riverabn/api-ecommerce-larabel
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Configuración
+
+1. Copia `.env.example` a `.env.local`:
+
+```
+copy .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Variables:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable | Descripción |
+|---|---|
+| `BASE_URL` | URL base de la API (ej. `http://localhost:8000/api`) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Cómo ejecutar
 
-## Learn More
+1. Levanta la API Laravel (ver su README): `php artisan serve`
+2. En este proyecto:
 
-To learn more about Next.js, take a look at the following resources:
+```
+npm install
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Abre http://localhost:3000
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Usuario de prueba: `test@example.com` / `Password.12`
 
-## Deploy on Vercel
+## Rutas implementadas
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Ruta | Tipo | Descripción |
+|---|---|---|
+| `/` | Pública | Catálogo de productos (Server Component + Suspense) |
+| `/products/[id]` | Pública | Detalle de producto |
+| `/login` | Pública | Inicio de sesión (Server Action, cookie httpOnly) |
+| `/register` | Pública | Registro (Server Action) |
+| `/cart` | Pública | Carrito (estado local) |
+| `/checkout` | Protegida | Crea la orden y paga con Stripe (Server Action) |
+| `/checkout/success` | Protegida | Confirmación de compra |
+| `/orders` | Protegida | Historial de compras (Suspense) |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Seguridad y rendimiento
+
+- Token guardado en cookie `httpOnly` mediante Server Actions; rutas protegidas con `proxy.ts`.
+- Lecturas con Server Components; mutaciones con Server Actions.
+- `loading.tsx` y `error.tsx` en catálogo, checkout e historial.
+- `revalidatePath()` tras crear orden/pagar para evitar datos desactualizados.
+- Reporte Lighthouse incluido en la carpeta `/evidencias`.
